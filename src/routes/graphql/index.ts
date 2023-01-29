@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncJsonSchemaToTs } from "@fastify/type-provider-json-schema-to-ts";
-import { buildSchema, graphql } from "graphql";
-import { graphqlBodySchema } from "./schema";
-import { generate_createUserDTO } from "../../../test/utils/fake";
+import { graphql, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from "graphql";
+import { allByIdType, allType, graphqlBodySchema, } from "./schema";
+import { getAll, getAllById } from './services';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -18,103 +18,36 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       const { variables } = request.body;
       console.log('var=', request.body.variables!.id);
 
+      const queryType = new GraphQLObjectType({
+        name: 'queryType',
+        fields: () => ({
+          all: {
+            type: allType,
+            resolve: async () =>
+              await getAll(fastify)
+          },
+          allById: {
+            type: allByIdType,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLID),
+              },
+            },
+            resolve: async (_source, { id }) =>
+              await getAllById(fastify, id)
+          },
+          /*  users: {},
+            user: {},
+            usersWithUserSubscribedTo: {},
+            userWithSubscribedToUser: {},
+            usersSubscriptions: {},*/
+        }),
+      });
 
-      const schema = buildSchema(`
-      type User {
-        id: ID!
-        firstName: String
-        lastName: String
-        email: String
-        subscribedToUserIds: [String]
-      }
 
-      type Profile {
-        id: String
-        avatar: String
-        sex: String
-        birthday: Int
-        country: String
-        street: String
-        city: String
-        memberTypeId: String
-        userId: String
-      }
+      const schema = new GraphQLSchema({ query: queryType });
 
-      type Post {
-        id: String
-        title: String
-        content: String
-        userId: String
-      }
-
-      type MemberType {
-        id: String
-        discount: Int
-        monthPostsLimit: Int
-      }
-
-      type All {
-        users: [User]
-        profiles: [Profile]
-        posts: [Post]
-        memberTypes: [MemberType]
-      }
-
-      type AllById {
-        user: User
-        profile: Profile
-        post: Post
-        memberType: MemberType
-      }
-
-      type Query {
-        all: All
-        allById(id:ID!) : AllById!
-        users: [User]
-        user: User
-        usersWithUserSubscribedTo: [User]
-        userWithSubscribedToUser: User
-        usersSubscriptions: [User]
-      }
-
-      `);
-
-      const rootValue = {
-        all: async () => {
-          const us = generate_createUserDTO();
-          await fastify.db.users.create(us);
-
-          const users = await fastify.db.users.findMany();
-          const profiles = await fastify.db.profiles.findMany();
-          const posts = await fastify.db.posts.findMany();
-          const memberTypes = await fastify.db.memberTypes.findMany();
-          return { users, profiles, posts, memberTypes }
-        },
-
-        allById: async ({ id }: { id: string }) => {
-          const user = await fastify.db.users.findOne({ key: "id", equals: id });
-          const profile = await fastify.db.profiles.findOne({ key: "id", equals: id });
-          const post = await fastify.db.posts.findOne({ key: "id", equals: id });
-          const memberType = await fastify.db.memberTypes.findOne({ key: "id", equals: id });
-          return { user, profile, post, memberType }
-        },
-        users: async () => {
-          const us = generate_createUserDTO();
-          await fastify.db.users.create(us);
-          return await fastify.db.users.findMany();
-        },
-        profiles: async () => {
-          return await fastify.db.profiles.findMany();
-        },
-        posts: async () => {
-          return await fastify.db.posts.findMany();
-        },
-        memberTypes: async () => {
-          return await fastify.db.memberTypes.findMany();
-        }
-      };
-
-      return await graphql({ schema, source, rootValue, variableValues: variables });
+      return await graphql({ schema, source, variableValues: variables });
     }
   );
 };
