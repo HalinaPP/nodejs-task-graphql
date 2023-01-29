@@ -52,7 +52,7 @@ export const ProfileInputDTO = new GraphQLInputObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     avatar: { type: new GraphQLNonNull(GraphQLString) },
-    sex: { type: new GraphQLNonNull(GraphQLString) },
+    sex: { type: new GraphQLNonNull(GraphQLString), defaultValue: 'female' },
     birthday: { type: new GraphQLNonNull(GraphQLInt) },
     country: { type: new GraphQLNonNull(GraphQLString) },
     street: { type: new GraphQLNonNull(GraphQLString) },
@@ -71,6 +71,16 @@ export const PostInputDTO = new GraphQLInputObjectType({
     userId: { type: new GraphQLNonNull(GraphQLID) },
   })
 });
+
+export const ChangeMemberTypeInputDTO = new GraphQLInputObjectType({
+  name: 'ChangeMemberTypeInputDTO',
+  fields: () => ({
+    id: { type: GraphQLID },
+    discount: { type: new GraphQLNonNull(GraphQLInt) },
+    monthPostsLimit: { type: new GraphQLNonNull(GraphQLInt) },
+  })
+});
+
 
 export const userType = new GraphQLObjectType({
   name: 'User',

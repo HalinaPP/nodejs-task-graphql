@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncJsonSchemaToTs } from "@fastify/type-provider-json-schema-to-ts";
 import { graphql, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from "graphql";
-import { allByIdType, allType, graphqlBodySchema, } from "./schema";
-import { getAll, getAllById } from './services';
+import { allByIdType, allType, ChangeMemberTypeInputDTO, graphqlBodySchema, memberType, PostInputDTO, postType, ProfileInputDTO, profileType, UserInputDTO, userType, } from "./schema";
+import { createPost, createProfile, createUser, getAll, getAllById, updateMemberType, updatePost, updateProfile, updateUser } from './services';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -45,7 +45,93 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       });
 
 
-      const schema = new GraphQLSchema({ query: queryType });
+      const mutationType = new GraphQLObjectType({
+        name: 'mutationType',
+        fields: () => ({
+          createUser: {
+            type: userType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(UserInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await createUser(fastify, data)
+          },
+          createProfile: {
+            type: profileType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(ProfileInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await createProfile(fastify, data)
+          },
+          createPost: {
+            type: postType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(PostInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await createPost(fastify, data)
+          },
+          updateUser: {
+            type: userType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(UserInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await updateUser(fastify, data)
+          },
+          updateProfile: {
+            type: profileType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(ProfileInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await updateProfile(fastify, data)
+          },
+          updatePost: {
+            type: postType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(PostInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await updatePost(fastify, data)
+          },
+          updateMemberType: {
+            type: memberType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(ChangeMemberTypeInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await updateMemberType(fastify, data)
+          },
+
+          /* subscribeTo: {},
+           unsubscribeFrom: {}*/
+        }),
+      });
+
+      const schema = new GraphQLSchema({ query: queryType, mutation: mutationType });
 
       return await graphql({ schema, source, variableValues: variables });
     }
