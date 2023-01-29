@@ -42,8 +42,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       });
 
       if (user === null) {
-        reply.notFound();
-        throw new Error();
+        throw fastify.httpErrors.notFound();
       } else {
         return user;
       }
