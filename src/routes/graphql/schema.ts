@@ -69,6 +69,21 @@ export const ProfileInputDTO = new GraphQLInputObjectType({
   }),
 });
 
+export const ChangeProfileInputDTO = new GraphQLInputObjectType({
+  name: "ChangeProfileInputDTO",
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    avatar: { type: GraphQLString },
+    sex: { type: GraphQLString, defaultValue: "female" },
+    birthday: { type: GraphQLString },
+    country: { type: GraphQLString },
+    street: { type: GraphQLString },
+    city: { type: GraphQLString },
+    memberTypeId: { type: GraphQLID },
+    userId: { type: GraphQLID },
+  }),
+});
+
 export const PostInputDTO = new GraphQLInputObjectType({
   name: "PostInputDTO",
   fields: () => ({
@@ -76,6 +91,16 @@ export const PostInputDTO = new GraphQLInputObjectType({
     title: { type: new GraphQLNonNull(GraphQLString) },
     content: { type: new GraphQLNonNull(GraphQLString) },
     userId: { type: new GraphQLNonNull(GraphQLID) },
+  }),
+});
+
+export const ChangePostInputDTO = new GraphQLInputObjectType({
+  name: "ChangePostInputDTO",
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    title: { type: GraphQLString },
+    content: { type: GraphQLString },
+    userId: { type: GraphQLString },
   }),
 });
 

@@ -10,6 +10,8 @@ import {
   allByIdType,
   allType,
   ChangeMemberTypeInputDTO,
+  ChangePostInputDTO,
+  ChangeProfileInputDTO,
   graphqlBodySchema,
   memberType,
   PostInputDTO,
@@ -173,7 +175,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             args: {
               data: {
                 name: "data",
-                type: new GraphQLNonNull(ProfileInputDTO),
+                type: ChangeProfileInputDTO,
               },
             },
             resolve: async (_source, { data }) =>
@@ -184,7 +186,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             args: {
               data: {
                 name: "data",
-                type: new GraphQLNonNull(PostInputDTO),
+                type: ChangePostInputDTO,
               },
             },
             resolve: async (_source, { data }) =>
