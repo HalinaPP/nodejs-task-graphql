@@ -6,20 +6,7 @@ import {
   subscribeBodySchema,
 } from "./schemas";
 import type { UserEntity } from "../../utils/DB/entities/DBUsers";
-
-const unsibscibedUser = async (
-  fastify: any,
-  userIdToSubscribed: string,
-  subscribedUser: UserEntity
-): Promise<void> => {
-  const subscribedToUserIds = subscribedUser.subscribedToUserIds.filter(
-    (id) => id !== userIdToSubscribed
-  );
-  await fastify.db.users.change(subscribedUser.id, {
-    ...subscribedUser,
-    subscribedToUserIds,
-  });
-};
+import { unsibscibedUser } from "../graphql/services";
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify

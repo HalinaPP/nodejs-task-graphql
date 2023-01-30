@@ -81,6 +81,14 @@ export const ChangeMemberTypeInputDTO = new GraphQLInputObjectType({
   })
 });
 
+export const SubscribeInputDTO = new GraphQLInputObjectType({
+  name: 'SubscribeInputDTO',
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    userId: { type: new GraphQLNonNull(GraphQLID) },
+  })
+});
+
 
 export const userType = new GraphQLObjectType({
   name: 'User',
@@ -191,14 +199,3 @@ export const allByIdType = new GraphQLObjectType({
     },
   })
 });
-
-/*
-
-
-type Mutation {
-  createUser(userData: UserDTO): User
-  createProfile: Profile
-  createPost: Post
-}
-
-*/

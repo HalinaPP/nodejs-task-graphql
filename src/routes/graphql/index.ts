@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncJsonSchemaToTs } from "@fastify/type-provider-json-schema-to-ts";
 import { graphql, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from "graphql";
-import { allByIdType, allType, ChangeMemberTypeInputDTO, graphqlBodySchema, memberType, PostInputDTO, postType, ProfileInputDTO, profileType, UserInputDTO, userType, } from "./schema";
-import { createPost, createProfile, createUser, getAll, getAllById, updateMemberType, updatePost, updateProfile, updateUser } from './services';
+import { allByIdType, allType, ChangeMemberTypeInputDTO, graphqlBodySchema, memberType, PostInputDTO, postType, ProfileInputDTO, profileType, SubscribeInputDTO, UserInputDTO, userType, } from "./schema";
+import { createPost, createProfile, createUser, getAll, getAllById, subscribeTo, unsubscribeFrom, updateMemberType, updatePost, updateProfile, updateUser } from './services';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -16,7 +16,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
     async function (request, reply) {
       const source = request.body.query!;
       const { variables } = request.body;
-      console.log('var=', request.body.variables!.id);
+      console.log('var=', request.body);
 
       const queryType = new GraphQLObjectType({
         name: 'queryType',
@@ -125,9 +125,28 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             resolve: async (_source, { data }) =>
               await updateMemberType(fastify, data)
           },
-
-          /* subscribeTo: {},
-           unsubscribeFrom: {}*/
+          subscribeTo: {
+            type: userType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(SubscribeInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await subscribeTo(fastify, data)
+          },
+          unsubscribeFrom: {
+            type: userType,
+            args: {
+              data: {
+                name: 'data',
+                type: new GraphQLNonNull(SubscribeInputDTO),
+              },
+            },
+            resolve: async (_source, { data }) =>
+              await unsubscribeFrom(fastify, data)
+          }
         }),
       });
 
