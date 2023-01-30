@@ -54,6 +54,17 @@ export const UserInputDTO = new GraphQLInputObjectType({
   }),
 });
 
+export const ChangeUserInputDTO = new GraphQLInputObjectType({
+  name: "ChangeUserInputDTO",
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString },
+    email: { type: GraphQLString },
+    subscribedToUserIds: { type: new GraphQLList(GraphQLID) },
+  }),
+});
+
 export const ProfileInputDTO = new GraphQLInputObjectType({
   name: "ProfileInputDTO",
   fields: () => ({
