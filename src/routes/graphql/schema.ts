@@ -218,7 +218,7 @@ export const usersWithUserSubscribedToProfileType = new GraphQLObjectType({
 
 
 export const userWithUserSubscribedTo2levelType = new GraphQLObjectType({
-  name: "userWithUserSubscribedToType",
+  name: "userWithUserSubscribedTo2levelType",
   description: "user with his userSubscribedTo,userSubscribedTo.",
   fields: () => ({
     id: { type: new GraphQLNonNull(GraphQLID) },
@@ -242,7 +242,7 @@ export const userWithUserSubscribedToType = new GraphQLObjectType({
     subscribedToUser: { type: new GraphQLList(userType) },
   }),
 });
-
+/*
 export const usersWithUserSubscribedToType = new GraphQLObjectType({
   name: "usersWithUserSubscribedToType",
   description: "users with their userSubscribedTo , userSubscribedTo",
@@ -252,7 +252,7 @@ export const usersWithUserSubscribedToType = new GraphQLObjectType({
     },
   }),
 });
-
+*/
 export const allType = new GraphQLObjectType({
   name: "All",
   description: "data of all users, profiles, posts, memmber-types",
