@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import { generate_createUserDTO } from "../../../test/utils/fake";
 import { MemberTypeEntity } from "../../utils/DB/entities/DBMemberTypes";
 import { PostEntity } from "../../utils/DB/entities/DBPosts";
 import { ProfileEntity } from "../../utils/DB/entities/DBProfiles";
@@ -22,8 +21,6 @@ export const unsibscibedUser = async (
 export const getUsers = async (
   fastify: FastifyInstance
 ): Promise<UserEntity[]> => {
-  const generatedUser = generate_createUserDTO();
-  await fastify.db.users.create(generatedUser);
   return await fastify.db.users.findMany();
 };
 
