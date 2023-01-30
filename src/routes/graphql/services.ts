@@ -206,7 +206,8 @@ export const getUserByIdWithAllData = async (fastify: FastifyInstance, id: strin
   return { user, profiles, posts, memberTypes };
 };
 
-export const getAllUserByIdWithAllData = async (fastify: FastifyInstance) => {
+export const getAllUserWithAllData = async (fastify: FastifyInstance) => {
   const users = await getUsers(fastify);
-  return users.map(async (user) => await getUserByIdWithAllData(fastify, user.id));
+  const usersWithAllData = users.map(async (user) => await getUserByIdWithAllData(fastify, user.id));
+  return { users: usersWithAllData }
 };
