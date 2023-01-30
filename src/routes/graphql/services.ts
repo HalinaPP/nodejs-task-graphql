@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import { generate_createUserDTO } from "../../../test/utils/fake";
 import { MemberTypeEntity } from "../../utils/DB/entities/DBMemberTypes";
 import { PostEntity } from "../../utils/DB/entities/DBPosts";

@@ -25,8 +25,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         { key: "id", equals: request.params.id });
 
       if (profiles === null) {
-        reply.notFound();
-        throw new Error();
+        throw fastify.httpErrors.notFound();
       } else {
         return profiles;
       }
@@ -48,8 +47,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       const profile = await fastify.db.profiles.findOne({ key: "userId", equals: userId });
 
       if (user === null || memberType === null || profile?.memberTypeId === memberTypeId) {
-        reply.badRequest();
-        throw new Error();
+        throw fastify.httpErrors.badRequest();
       }
       return fastify.db.profiles.create(request.body);
     }
@@ -67,8 +65,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         const deletedProfile = await fastify.db.profiles.delete(request.params.id);
         return deletedProfile;
       } catch (err: any) {
-        reply.badRequest();
-        throw new Error(err);
+        throw fastify.httpErrors.badRequest();
       }
     }
   );
@@ -92,8 +89,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         const changed = await fastify.db.profiles.change(params.id, body);
         return changed;
       } catch (err: any) {
-        reply.notFound();
-        throw new Error(err.message);
+        throw fastify.httpErrors.notFound(err.message);
       }
     }
   );

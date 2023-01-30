@@ -6,7 +6,7 @@ import {
   subscribeBodySchema,
 } from "./schemas";
 import type { UserEntity } from "../../utils/DB/entities/DBUsers";
-import { unsibscibedUser, findSubscribedToUsers } from "../graphql/services";
+import { unsibscibedUser, findUserSubscribedToUsers } from "../graphql/services";
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -78,7 +78,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
           await fastify.db.posts.delete(post.id);
         }
 
-        const subscribedUsers: UserEntity[] = await findSubscribedToUsers(fastify, id);
+        const subscribedUsers: UserEntity[] = await findUserSubscribedToUsers(fastify, id);
 
         subscribedUsers.forEach(async (subscribedUser) => {
           await unsibscibedUser(fastify, id, subscribedUser);
@@ -87,8 +87,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
 
         return deletedUser;
       } catch (err: any) {
-        reply.badRequest();
-        throw new Error(err);
+        throw fastify.httpErrors.badRequest();
       }
     }
   );
@@ -137,8 +136,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       });
 
       if (user === null) {
-        reply.badRequest();
-        throw new Error("bad request");
+        throw fastify.httpErrors.badRequest();
       }
 
       if (subscribedUserId) {
@@ -148,13 +146,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         });
 
         if (subscribedUser === null) {
-          reply.badRequest();
-          throw new Error("bad request");
+          throw fastify.httpErrors.badRequest();
         }
 
         if (!subscribedUser.subscribedToUserIds.includes(userId)) {
-          reply.badRequest();
-          throw new Error("bad request");
+          throw fastify.httpErrors.badRequest();
         } else {
           await unsibscibedUser(fastify, userId, subscribedUser);
         }
@@ -189,8 +185,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       try {
         return fastify.db.users.change(params.id, body);
       } catch (err: any) {
-        reply.badRequest();
-        throw new Error(err.message);
+        throw fastify.httpErrors.badRequest(err.message);
       }
     }
   );

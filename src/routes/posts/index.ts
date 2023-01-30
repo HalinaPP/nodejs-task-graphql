@@ -22,8 +22,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         { key: "id", equals: request.params.id });
 
       if (post === null) {
-        reply.notFound();
-        throw new Error();
+        throw fastify.httpErrors.notFound();
       } else {
         return post;
       }
@@ -54,8 +53,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         const deletedPost = await fastify.db.posts.delete(request.params.id);
         return deletedPost;
       } catch (err: any) {
-        reply.badRequest();
-        throw new Error(err);
+        throw fastify.httpErrors.badRequest(err.message);
       }
     }
   );
@@ -78,8 +76,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       try {
         return fastify.db.posts.change(params.id, body);
       } catch (err: any) {
-        reply.notFound();
-        throw new Error(err.message);
+        throw fastify.httpErrors.notFound(err.message);
       }
     }
   );

@@ -24,8 +24,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         { key: "id", equals: request.params.id });
 
       if (memberTypes === null) {
-        reply.notFound();
-        throw new Error();
+        throw fastify.httpErrors.notFound();
       } else {
         return memberTypes;
       }
@@ -50,8 +49,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       try {
         return fastify.db.memberTypes.change(params.id, body) || reply.notFound();
       } catch (err: any) {
-        reply.notFound();
-        throw new Error(err.message);
+        throw fastify.httpErrors.notFound();
       }
     }
   );
