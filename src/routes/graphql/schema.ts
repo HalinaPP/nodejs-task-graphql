@@ -153,6 +153,16 @@ export const memberType = new GraphQLObjectType({
   })
 });
 
+export const userTypeWithAllData = new GraphQLObjectType({
+  name: 'userTypeWithAllData',
+  description: 'user data with all data',
+  fields: () => ({
+    user: { type: new GraphQLNonNull(userType) },
+    profiles: { type: new GraphQLList(profileType) },
+    posts: { type: new GraphQLList(postType) },
+    memberTypes: { type: new GraphQLList(memberType) },
+  })
+});
 
 export const allType = new GraphQLObjectType({
   name: 'All',

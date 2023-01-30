@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncJsonSchemaToTs } from "@fastify/type-provider-json-schema-to-ts";
 import { graphql, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from "graphql";
-import { allByIdType, allType, ChangeMemberTypeInputDTO, graphqlBodySchema, memberType, PostInputDTO, postType, ProfileInputDTO, profileType, SubscribeInputDTO, UserInputDTO, userType, } from "./schema";
-import { createPost, createProfile, createUser, getAll, getAllById, subscribeTo, unsubscribeFrom, updateMemberType, updatePost, updateProfile, updateUser } from './services';
+import { allByIdType, allType, ChangeMemberTypeInputDTO, graphqlBodySchema, memberType, PostInputDTO, postType, ProfileInputDTO, profileType, SubscribeInputDTO, UserInputDTO, userType, userTypeWithAllData, } from "./schema";
+import { createPost, createProfile, createUser, getAll, getAllById, getAllUserByIdWithAllData, getUserByIdWithAllData, subscribeTo, unsubscribeFrom, updateMemberType, updatePost, updateProfile, updateUser } from './services';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -36,9 +36,22 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             resolve: async (_source, { id }) =>
               await getAllById(fastify, id)
           },
-          /*  users: {},
-            user: {},
-            usersWithUserSubscribedTo: {},
+          getUser: {
+            type: userTypeWithAllData,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLID),
+              },
+            },
+            resolve: async (_source, { id }) =>
+              await getUserByIdWithAllData(fastify, id)
+          },
+          getUsers: {
+            type: [userTypeWithAllData],
+            resolve: async () =>
+              await getAllUserByIdWithAllData(fastify)
+          },
+          /*  usersWithUserSubscribedTo: {},
             userWithSubscribedToUser: {},
             usersSubscriptions: {},*/
         }),
