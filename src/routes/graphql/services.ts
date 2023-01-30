@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import fastify, { FastifyInstance } from 'fastify';
 import { generate_createUserDTO } from "../../../test/utils/fake";
 import { MemberTypeEntity } from "../../utils/DB/entities/DBMemberTypes";
 import { PostEntity } from "../../utils/DB/entities/DBPosts";
@@ -179,8 +179,8 @@ export const unsubscribeFrom = async (
   }
 };
 
-export const getProfilesByUserId = async (fastify: FastifyInstance, id: string) => {
-  return await fastify.db.profiles.findMany({ key: "userId", equals: id });
+export const getProfileByUserId = async (fastify: FastifyInstance, id: string) => {
+  return await fastify.db.profiles.findOne({ key: "userId", equals: id });
 };
 
 export const getPostsByUserId = async (fastify: FastifyInstance, id: string) => {
@@ -191,23 +191,18 @@ export const getPostByUserIds = async (fastify: FastifyInstance, ids: string[]) 
   return await fastify.db.posts.findMany({ key: "userId", equalsAnyOf: ids });
 }
 
-export const getUserMemberTypeIds = (profiles: ProfileEntity[]) => {
-  return profiles.map((profile) => profile.memberTypeId);
-};
-
-export const getUserMemberTypes = async (fastify: FastifyInstance, ids: string[]) => {
-  return await fastify.db.memberTypes.findMany({ key: "id", equalsAnyOf: ids });
+export const getUserMemberTypeById = async (fastify: FastifyInstance, id: string) => {
+  return await fastify.db.memberTypes.findOne({ key: "id", equals: id });
 };
 
 export const getUserByIdWithAllData = async (fastify: FastifyInstance, id: string) => {
   const user = await getUserById(fastify, id);
-  const profiles = await getProfilesByUserId(fastify, id);
+  const profile = await getProfileByUserId(fastify, id);
   const posts = await getPostsByUserId(fastify, id);
+  const memberTypeId = profile?.memberTypeId ?? null;
+  const memberType = memberTypeId ? await getUserMemberTypeById(fastify, memberTypeId) : null;
 
-  const memberTypeIds = getUserMemberTypeIds(profiles);
-  const memberTypes = await getUserMemberTypes(fastify, memberTypeIds);
-
-  return { user, profiles, posts, memberTypes };
+  return { user, profile, posts, memberType };
 };
 
 export const getAllUserWithAllData = async (fastify: FastifyInstance) => {
@@ -216,15 +211,15 @@ export const getAllUserWithAllData = async (fastify: FastifyInstance) => {
   return { users: usersWithAllData }
 };
 
-export const findSubscribedToUsers = async (fastify: FastifyInstance, userId: string) => {
+export const findUserSubscribedToUsers = async (fastify: FastifyInstance, userId: string) => {
   return await fastify.db.users.findMany({
     key: "subscribedToUserIds",
     inArray: userId,
   });
 }
 
-export const findSubscribedToUsersIds = async (fastify: FastifyInstance, userId: string) => {
-  const subscribedToUsers = await findSubscribedToUsers(fastify, userId);
+export const findUserSubscribedToIds = async (fastify: FastifyInstance, userId: string) => {
+  const subscribedToUsers = await findUserSubscribedToUsers(fastify, userId);
 
   if (subscribedToUsers.length > 0) {
     return subscribedToUsers.map(user => user.id);
@@ -233,10 +228,28 @@ export const findSubscribedToUsersIds = async (fastify: FastifyInstance, userId:
   return [];
 }
 
+const getUsersByIds = async (fastify: FastifyInstance, ids: string[]) => {
+  return await fastify.db.users.findMany({ key: "id", equalsAnyOf: ids });
+}
+
 export const getUserWithSubscribedToUserPosts = async (fastify: FastifyInstance, userId: string) => {
   const user = await getUserById(fastify, userId);
-  const subscribedUserIds = await findSubscribedToUsersIds(fastify, userId);
+  const posts = await getPostsByUserId(fastify, userId);
 
-  const posts = subscribedUserIds.length > 0 ? await getPostByUserIds(fastify, subscribedUserIds) : [];
-  return { user, posts }
+  const subscribedUserIds = user.subscribedToUserIds;
+
+  const subscribedToUser = subscribedUserIds.length > 0 ? await getUsersByIds(fastify, subscribedUserIds) : [];
+  return { ...user, posts, subscribedToUser }
+}
+
+export const usersWithUserSubscribedToProfiles = async (fastify: FastifyInstance) => {
+  const users = await getUsers(fastify);
+  const usersWithUserSubscribedData = users.map(async (user) => {
+    const userSubscribedTo = await findUserSubscribedToUsers(fastify, user.id);
+    const profile = await getProfileByUserId(fastify, user.id);
+
+    return { ...user, profile, userSubscribedTo }
+  });
+
+  return { users: usersWithUserSubscribedData };
 }

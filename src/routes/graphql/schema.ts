@@ -164,9 +164,9 @@ export const userTypeWithAllData = new GraphQLObjectType({
   description: "user data with all data",
   fields: () => ({
     user: { type: new GraphQLNonNull(userType) },
-    profiles: { type: new GraphQLList(profileType) },
+    profile: { type: profileType },
     posts: { type: new GraphQLList(postType) },
-    memberTypes: { type: new GraphQLList(memberType) },
+    memberType: { type: memberType },
   }),
 });
 
@@ -182,8 +182,37 @@ export const userWithSubscribedToUserPostsType = new GraphQLObjectType({
   name: "userWithSubscribedToUserPostsType",
   description: "user by id with his subscribedToUser, posts.",
   fields: () => ({
-    user: { type: userType },
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString },
+    email: { type: GraphQLString },
+    subscribedToUserIds: { type: new GraphQLList(GraphQLID) },
     posts: { type: new GraphQLList(postType) },
+    subscribedToUser: { type: new GraphQLList(userType) },
+  }),
+});
+
+export const userWithUserSubscribedToProfileType = new GraphQLObjectType({
+  name: "userWithUserSubscribedToProfileType",
+  description: "user with his userSubscribedTo ids, profile.",
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString },
+    email: { type: GraphQLString },
+    subscribedToUserIds: { type: new GraphQLList(GraphQLID) },
+    profile: { type: profileType },
+    userSubscribedTo: { type: new GraphQLList(userType) },
+  }),
+});
+
+export const usersWithUserSubscribedToProfileType = new GraphQLObjectType({
+  name: "usersWithUserSubscribedToProfileType",
+  description: "users with his userSubscribedTo ids, profile.",
+  fields: () => ({
+    users: {
+      type: new GraphQLList(userWithUserSubscribedToProfileType),
+    },
   }),
 });
 

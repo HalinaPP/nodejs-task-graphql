@@ -19,6 +19,7 @@ import {
   SubscribeInputDTO,
   UserInputDTO,
   usersWithAllDataType,
+  usersWithUserSubscribedToProfileType,
   userType,
   userTypeWithAllData,
   userWithSubscribedToUserPostsType,
@@ -38,6 +39,7 @@ import {
   updatePost,
   updateProfile,
   updateUser,
+  usersWithUserSubscribedToProfiles,
 } from "./services";
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -94,6 +96,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             type: usersWithAllDataType,
             resolve: async () => await getAllUserWithAllData(fastify),
           },
+          getUsersWithUserSubscribedToProfiles: {
+            type: usersWithUserSubscribedToProfileType,
+            resolve: async () =>
+              usersWithUserSubscribedToProfiles(fastify),
+          },
           getUserSubscribedPosts: {
             type: userWithSubscribedToUserPostsType,
             args: {
@@ -105,7 +112,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               getUserWithSubscribedToUserPosts(fastify, id),
           },
 
-          /*  usersWithUserSubscribedTo: {},
+          /*  : {},
             usersSubscriptions: {},*/
         }),
       });
