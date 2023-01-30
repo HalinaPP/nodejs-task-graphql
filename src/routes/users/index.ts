@@ -6,7 +6,7 @@ import {
   subscribeBodySchema,
 } from "./schemas";
 import type { UserEntity } from "../../utils/DB/entities/DBUsers";
-import { unsibscibedUser } from "../graphql/services";
+import { unsibscibedUser, findSubscribedToUsers } from "../graphql/services";
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -78,10 +78,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
           await fastify.db.posts.delete(post.id);
         }
 
-        const subscribedUsers = await fastify.db.users.findMany({
-          key: "subscribedToUserIds",
-          inArray: id,
-        });
+        const subscribedUsers: UserEntity[] = await findSubscribedToUsers(fastify, id);
 
         subscribedUsers.forEach(async (subscribedUser) => {
           await unsibscibedUser(fastify, id, subscribedUser);
