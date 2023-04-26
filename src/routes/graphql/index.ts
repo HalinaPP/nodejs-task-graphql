@@ -23,10 +23,10 @@ import {
   UserInputDTO,
   usersWithAllDataType,
   usersWithUserSubscribedToProfileType,
+  usersWithUserSubscribedToType,
   userType,
   userTypeWithAllData,
   userWithSubscribedToUserPostsType,
-  userWithUserSubscribedTo2levelType,
 } from "./schema";
 import {
   createPost,
@@ -117,7 +117,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               getUserWithSubscribedToUserPosts(fastify, id),
           },
           getUsersSubscriptions: {
-            type: userWithUserSubscribedTo2levelType,
+            type: usersWithUserSubscribedToType,
             resolve: async () =>
               getUsersSubscriptions(fastify, 2),
           },
